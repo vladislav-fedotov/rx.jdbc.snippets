@@ -1,6 +1,7 @@
 package conf;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,16 +45,13 @@ public class TestConfig {
     @Bean
     @Profile("mysql")
     public DataSource mysqlDataSourcembee() throws PropertyVetoException {
-        ComboPooledDataSource dataSource = new ComboPooledDataSource();
-        dataSource.setDriverClass(mysqlDriver);
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setDriverClassName(mysqlDriver);
         dataSource.setJdbcUrl(mysqlUrl);
-        dataSource.setUser(mysqlUsername);
+        dataSource.setUsername(mysqlUsername);
         dataSource.setPassword(mysqlPassword);
-        dataSource.setInitialPoolSize(1);
-        dataSource.setAcquireIncrement(1);
-        dataSource.setMinPoolSize(1);
-        dataSource.setMaxPoolSize(10);
-        dataSource.setMaxConnectionAge(500);
+        dataSource.setMaximumPoolSize(10);
+        dataSource.setConnectionTimeout(1000);
         return dataSource;
     }
 

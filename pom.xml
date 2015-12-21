@@ -7,6 +7,18 @@
     <groupId>rx.jdbc</groupId>
     <artifactId>rx.jdbc.snippets</artifactId>
     <version>1.0</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
@@ -54,6 +66,11 @@
             <groupId>c3p0</groupId>
             <artifactId>c3p0</artifactId>
             <version>0.9.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP-java6</artifactId>
+            <version>2.3.2</version>
         </dependency>
     </dependencies>
 

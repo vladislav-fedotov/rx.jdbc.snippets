@@ -1,3 +1,4 @@
+import com.github.davidmoten.rx.RxUtil;
 import com.github.davidmoten.rx.jdbc.Database;
 import conf.TestConfig;
 import org.junit.Before;
@@ -49,5 +50,14 @@ public class TimeoutTest {
 
         subscription.unsubscribe();
 
+    }
+
+    @Test
+    public void testRowsAffected() {
+        int affectedRows = database.update("update big_table set ID = concat(ID,'test')")
+                .count()
+                .toBlocking()
+                .first();
+        System.out.println(affectedRows);
     }
 }

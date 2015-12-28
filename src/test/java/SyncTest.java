@@ -12,13 +12,13 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import rx.Observable;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("h2")
 public class SyncTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncTest.class);
+
     private static final int INITIAL_STATE = 0;
     private static final int AFTER_QUERY_EXECUTION_STATE = 1;
     private static final int BEFORE_QUERY_EXECUTION = 2;
@@ -44,7 +45,7 @@ public class SyncTest {
     }
 
     @Test
-    public void testSimpleAsyncSelect() {
+    public void testSimpleAsyncSelect() throws InterruptedException {
         AtomicInteger state = new AtomicInteger(INITIAL_STATE);
         AtomicReference<String> selectedEmail = new AtomicReference<>();
         database.asynchronous()
@@ -61,9 +62,11 @@ public class SyncTest {
                     state.set(AFTER_QUERY_EXECUTION_STATE);
                     return selectedItem;
                 })
-                .doOnError(Throwable::printStackTrace)
-                .doOnNext(selectedEmail::set)
-                .subscribe();
+                .subscribeOn(Schedulers.newThread())
+                .unsubscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.newThread())
+                .subscribe(selectedEmail::set, Throwable::printStackTrace);
+
 
         assertEquals(INITIAL_STATE, state.get());
         state.set(BEFORE_QUERY_EXECUTION);
@@ -77,7 +80,8 @@ public class SyncTest {
                 e.printStackTrace();
             }
         }
-        if(state.get() == AFTER_QUERY_EXECUTION_STATE) {
+        if (state.get() == AFTER_QUERY_EXECUTION_STATE) {
+            LOGGER.info("Selected email: {}", selectedEmail.get());
             assertEquals("mkyong@gmail.com", selectedEmail.get());
         }
     }
@@ -85,7 +89,8 @@ public class SyncTest {
     @Test
     public void testSimpleSyncSelect() {
         AtomicInteger state = new AtomicInteger(INITIAL_STATE);
-        String selectedEmail = database.select("SELECT email FROM users")
+        String selectedEmail = database
+                .select("SELECT email FROM users")
                 .getAs(String.class)
                 .map(selectedItem -> {
                     assertEquals(INITIAL_STATE, state.get());

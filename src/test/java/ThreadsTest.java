@@ -50,12 +50,8 @@ public class ThreadsTest {
                 .subscribeOn(Schedulers.newThread())
                 .unsubscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.newThread())
-                .doOnNext(s -> {
-                    System.out.println("doOnNext_1-" + Thread.currentThread().getName() + " - " + s);
-                })
-                .doOnNext(s -> {
-                    System.out.println("doOnNext_2-" + Thread.currentThread().getName() + " - " + s);
-                });
+                .doOnNext(s -> System.out.println("doOnNext_1-" + Thread.currentThread().getName() + " - " + s))
+                .doOnNext(s -> System.out.println("doOnNext_2-" + Thread.currentThread().getName() + " - " + s));
         observable.subscribe(value -> {
             try {
                 TimeUnit.SECONDS.sleep(1);

@@ -38,7 +38,6 @@ public class CancelTest {
     public void testQueryCancelattion() throws Exception {
         int beforeQueryNumberOfOpenConnections = getNumberOfOpenConnections();
 
-//        Subscription subscription =
         Observable<Timestamp> observable = database.asynchronous()
                                                             .select("SELECT * FROM big_table t1\n" +
                                                                     "JOIN big_table t2 ON (SUBSTR(t1.TEXT,RAND()*100," +

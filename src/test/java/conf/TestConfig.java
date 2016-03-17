@@ -1,6 +1,6 @@
 package conf;
 
-import com.jolbox.bonecp.BoneCPDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,11 +44,18 @@ public class TestConfig {
     @Bean
     @Profile("mysql")
     public DataSource mysqlDataSource() throws PropertyVetoException {
-        BoneCPDataSource dataSource = new BoneCPDataSource();
-        dataSource.setDriverClass(mysqlDriver);
+//        BoneCPDataSource dataSource = new BoneCPDataSource();
+//        dataSource.setDriverClass(mysqlDriver);
+//        dataSource.setUsername(mysqlUsername);
+//        dataSource.setPassword(mysqlPassword);
+//        dataSource.setJdbcUrl(mysqlUrl);
+
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(mysqlUrl);
         dataSource.setUsername(mysqlUsername);
         dataSource.setPassword(mysqlPassword);
-        dataSource.setJdbcUrl(mysqlUrl);
+        dataSource.setDriverClassName(mysqlDriver);
+
         return dataSource;
     }
 
